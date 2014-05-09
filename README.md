@@ -13,12 +13,15 @@ And then execute:
     $ bundle
 
 Or clone it and install yourself as:
-
-    $ rake install bs_parser
+    $ git clone https://github.com:mearly87/bs_parser.git
+    $ cd bs_parser && gem build bs_parser.gemspec
+    $ sudo gem install bs_parser-0.0.1.gem
 
 ## Usage
 
-TODO: Write usage instructions here
+from command line:
+
+    $ bs_parser <pdf_bank_statment>
 
 ## Contributing
 
