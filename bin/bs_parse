@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+require 'bs_parser.rb'
+
+BsParser.get_text(ARGV[0]).each do |page|
+	page.each do |transaction|
+		puts "#{transaction[4]}: #{transaction[5]}"
+	end
+end

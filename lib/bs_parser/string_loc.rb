@@ -159,7 +159,8 @@ class StringLoc
 	end
 
   def char_size
-    avg_size = width / text.length if text else 1
+    avg_size = width / text.length if text
+    avg_size ||= 1
     Math.sqrt(avg_size * (self.bottom - self.top)) / 2
   end
 
