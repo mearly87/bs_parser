@@ -6,15 +6,15 @@ TODO: Write a gem description
 
 Add this line to your application's Gemfile:
 
-    gem 'bs_parser'
+    gem 'bs_parser', "git@github.com:mearly87/bs_parser.git"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or clone it and install yourself as:
 
-    $ gem install bs_parser
+    $ rake install bs_parser
 
 ## Usage
 
