@@ -22,8 +22,8 @@ Or clone it and install it yourself:
 
 from command line:
 
-    $ bs_parser <pdf_bank_statment>
-
+    $ bs_parse <pdf_bank_statment>
+    
 ## Contributing
 
 1. Fork it
