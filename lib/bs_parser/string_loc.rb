@@ -256,11 +256,7 @@ class StringLoc
             return :credit, self.to_s
           end
         when :check_header
-          if row_type == :credit
-            return :summary, amount
-          else
-            return :debit, amount
-          end
+          row_type ||= :check
         when :debit_header
             return row_type || :debit, amount 
         when :credit_header
@@ -273,6 +269,11 @@ class StringLoc
           type = row_type || :balance
           amount = self.to_s if type == :balance
           return type, amount
+        when :unkown
+          type = row_type || :unknown
+          if self.is_amount?
+            amount ||= value
+          end
       end
     end
     return row_type, amount

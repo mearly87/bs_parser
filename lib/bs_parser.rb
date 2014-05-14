@@ -107,7 +107,7 @@ module BsParser
     def self.transactions(string_locs)
 	    values(string_locs).map{|key, values| 
 	      top,bottom,left,right,type,amount = 10000000,0,1000000,0,nil,nil
-	      values.each do |value| 
+	      values.sort_by(&:left).each do |value| 
 	        top = value.top if top > value.top
 	        bottom = value.bottom if bottom < value.bottom
 	        left = value.left if left > value.left
