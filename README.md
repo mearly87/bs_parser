@@ -14,7 +14,7 @@ And then execute:
 
 Or clone it and install it yourself:
 
-    $ git clone https://github.com:mearly87/bs_parser.git
+    $ git clone https://github.com/mearly87/bs_parser.git
     $ cd bs_parser && gem build bs_parser.gemspec
     $ sudo gem install bs_parser-0.0.1.gem
 
@@ -22,8 +22,8 @@ Or clone it and install it yourself:
 
 from command line:
 
-    $ bs_parser <pdf_bank_statment>
-
+    $ bs_parse <pdf_bank_statment>
+    
 ## Contributing
 
 1. Fork it
