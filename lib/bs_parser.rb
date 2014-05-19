@@ -78,12 +78,13 @@ module BsParser
 	    group_keywords_by_row(find_keywords(string_locs)).map{|key, values| 
 	      values.sort_by!(&:left)
 	      top,bottom,left,right,type,amount = 10000000,0,1000000,0,nil,nil
-	      curr_header = values if header?(values)
-	      values = zip_values(curr_header, values)
-	      if values.nil?
+	      mapped_values = zip_values(curr_header, values)
+	      if !mapped_values || mapped_values.none? {|value| value[1] && value[1].is_amount? }
+	      	curr_header = values
+	      	nil
 	      	next
 	      end
-	      values.each do |header, value| 
+	      mapped_values.each do |header, value| 
 	      	next unless value
 	        top = value.top if top > value.top
 	        bottom = value.bottom if bottom < value.bottom
@@ -96,7 +97,7 @@ module BsParser
     end
 
     def self.header?(row)
-    	row.any?{|cell| cell.header?} && row.none?{|cell| cell.is_amount?}
+    	row.none?{|cell| cell.is_amount?}
     end
 
     def self.zip_values(header_row, value_row)

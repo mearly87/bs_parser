@@ -224,6 +224,9 @@ class StringLoc
       return row_type || :header, amount
     else
       case header.type.to_sym
+      when :amount_header
+          row_type ||= :amount
+          return row_type, self.to_s
         when :debit_header
           if row_type == :credit
             return :summary, amount
