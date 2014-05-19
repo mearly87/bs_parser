@@ -73,48 +73,63 @@ module BsParser
 	     end
 	  end
 
-	def self.values(string_locs)
-	    string_locs.reject{|loc| !loc.keyword? }.collect do |loc|
+    def self.transactions(string_locs)
+    	curr_header = nil
+	    group_keywords_by_row(find_keywords(string_locs)).map{|key, values| 
+	      values.sort_by!(&:left)
+	      top,bottom,left,right,type,amount = 10000000,0,1000000,0,nil,nil
+	      curr_header = values if header?(values)
+	      values = zip_values(curr_header, values)
+	      if values.nil?
+	      	next
+	      end
+	      values.each do |header, value| 
+	      	next unless value
+	        top = value.top if top > value.top
+	        bottom = value.bottom if bottom < value.bottom
+	        left = value.left if left > value.left
+	        right = value.right if right < value.right
+	        type, amount = value.get_type_by_row(type, amount, header, values, curr_header)
+	      end
+	      [top,bottom,left,right,type,amount]
+	    }.reject {|trans| trans.nil? || !trans[5] }
+    end
+
+    def self.header?(row)
+    	row.any?{|cell| cell.header?} && row.none?{|cell| cell.is_amount?}
+    end
+
+    def self.zip_values(header_row, value_row)
+    	value_row = value_row.sort_by(&:left)
+    	return unless header_row
+    	i = 0
+    	header_row.collect do |header|
+    		value = value_row.find do |value|
+    			header.vertical_overlap([value.left, value.right])
+    		end
+    		[header, value]
+    	end
+
+    end
+
+    def self.find_keywords(string_locs)
+    	string_locs.reject{|loc| !loc.keyword? }.collect do |loc|
 	      loc.to_s.enum_for(:scan, StringLoc::KEYWORD_REGEX)
 	      .map { |debit_header, credit_header, date_header, check_header,amount_header, balance_header, date, amount, description|
 	          match = debit_header || credit_header || date_header || balance_header || date || amount || check_header || amount_header || description
 	          loc.split(loc.to_s.index(match), match.length)
 	      }.reject {|match| match.empty?}
-	    end.flatten.sort_by(&:left).inject({}){ |value_cols, string_loc|
-	      if !value_cols.empty? && new_range = string_loc.vertical_overlap(value_cols.keys.last)
-	        value_cols[new_range] = value_cols.delete(value_cols.keys.last) << string_loc
-	      else
-	        value_cols[[string_loc.left, string_loc.right]] = [string_loc]
-	      end
-	      value_cols
-	      }
-	      .flat_map { |key, value| 
-	        column_type = :unknown
-	        value.sort_by(&:top).collect do |trans|
-	          column_type = trans.set_type_by_column(column_type)
-	          trans
-	        end
-	      }.flatten.sort_by(&:top).inject({}){ |trans_rows, string_loc|
+	    end.flatten
+	end
+
+	def self.group_keywords_by_row(keywords)
+	    keywords.sort_by(&:top).inject({}) do |trans_rows, string_loc|
 	      if !trans_rows.empty? && new_range = string_loc.horizontal_overlap(trans_rows.keys.last)
 	        trans_rows[new_range] = trans_rows.delete(trans_rows.keys.last) << string_loc
 	      else
 	        trans_rows[[string_loc.top, string_loc.bottom]] = [string_loc]
 	      end
 	      trans_rows
-	    }
-    end
-
-    def self.transactions(string_locs)
-	    values(string_locs).map{|key, values| 
-	      top,bottom,left,right,type,amount = 10000000,0,1000000,0,nil,nil
-	      values.sort_by(&:left).each do |value| 
-	        top = value.top if top > value.top
-	        bottom = value.bottom if bottom < value.bottom
-	        left = value.left if left > value.left
-	        right = value.right if right < value.right
-	        type, amount = value.get_type_by_row(type, amount)
-	      end
-	      [top,bottom,left,right,type,amount]
-	    }.reject {|trans| !trans[5] }
-    end
+	    end
+	end
 end

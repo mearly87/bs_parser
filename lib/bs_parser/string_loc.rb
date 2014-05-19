@@ -219,26 +219,38 @@ class StringLoc
     to_s.empty? || (/\A\s+\Z/).match(to_s)
   end
 
-
-  def set_type_by_column(column_type)
-    case self.type.to_sym
-      when :amount
-        return self.type = column_type if column_type != :unkown
-      when :amount_header
-        return :amount
-      when :debit_header
-        return :debit
-      when :credit_header
-        return :credit
-      when :balance_header
-        return :balance
-      when :date_header
-        return :date
-    end 
-    return column_type  
+  def get_type_by_row(row_type, amount, header, row, curr_header)
+    if self.to_s.index('_header')
+      return row_type || :header, amount
+    else
+      case header.type.to_sym
+        when :debit_header
+          if row_type == :credit
+            return :summary, amount
+          else
+            return :debit, self.to_s
+          end
+        when :credit_header
+          if row_type == :debit
+            return :summary, amount
+          else
+            return :credit, self.to_s
+          end
+        when :balance
+          type = row_type || :balance
+          amount = self.to_s if type == :balance
+          return type, amount
+        when :unkown
+          type = row_type || :unknown
+          if self.is_amount?
+            amount ||= value
+          end
+      end
+    end
+    return row_type, amount
   end
 
-  def get_type_by_row(row_type, amount)
+  def get_type_by_row1(row_type, amount, header, row, curr_header)
     if self.to_s.index('_header')
       return row_type || :header, amount
     else
@@ -278,6 +290,5 @@ class StringLoc
     end
     return row_type, amount
   end
-
 
 end
