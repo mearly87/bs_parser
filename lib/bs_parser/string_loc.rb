@@ -23,6 +23,10 @@ class StringLoc
   end
 
   def self.new_from_textrun(char, page_height)
+    if char.is_a? REXML::Element
+      return StringLoc.create_new(char.text, char.attributes["l"], char.attributes["r"], line.attributes["t"], line.attributes["b"])
+    end
+
     str_loc = StringLoc.new
 
     str_loc.right = char.x + char.width
