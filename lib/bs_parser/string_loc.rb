@@ -13,10 +13,10 @@ class StringLoc
   def self.create_new(character, l, r, t, b)
     str_loc = StringLoc.new
 
-    str_loc.right = r
-    str_loc.left = l
-    str_loc.bottom = b
-    str_loc.top = t
+    str_loc.right = r.to_i
+    str_loc.left = l.to_i
+    str_loc.bottom = b.to_i
+    str_loc.top = t.to_i
     str_loc.text = character
     str_loc.set_type
     return str_loc
